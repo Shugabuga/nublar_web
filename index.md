@@ -1,3 +1,12 @@
+---
+layout: default
+title:  "Nublar"
+date:   2022-01-24 16:00:00 -0500
+categories: nublar
+tags: Nublar
+copyleft: mit
+---
+
 <h1 style="text-align: center">Nublar</h1>
 
 <p style="text-align:center;font-style:italic">A Chromium fork that doesn't suck.</p>
