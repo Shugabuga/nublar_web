@@ -7,7 +7,7 @@ tags: Nublar
 copyleft: mit
 ---
 
-<style>.markdown-body>*:first-child {display:none} @media(prefers-color-scheme:dark){html, .markdown-body{background-color:#1c1c1c; color:#cdcdcd} hr{opacity: 0.2}}</style>
+<style>.markdown-body>*:first-child {display:none} @media(prefers-color-scheme:dark){html, body, .markdown-body{background-color:#1c1c1c; color:#cdcdcd} hr{opacity: 0.2}}</style>
 
 <h1 style="text-align: center">Nublar</h1>
 
