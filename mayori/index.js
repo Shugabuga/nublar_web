@@ -187,7 +187,6 @@ function tooltip(inp) {
 function tooltipFrame(rid) {
     const el = document.querySelector("#bookmarks > p");
     el.innerText = "";
-    const el = document.querySelector("#bookmarks > p");
     const newEl = document.createElement("iframe");
     newEl.src = `chrome-search://most-visited/title.html?rid=${rid}&c=7c818c&fs=14&f=arial%2Csans-serif&ta=center`;
     el.appendChild(newEl);
