@@ -1,5 +1,6 @@
 // Yes, a global variable. How ugly!
 let bookmarks = new Map();
+let textColor = "rgba(124, 129, 140, 255)";
 
 window.onload = () => {
     setTime();
@@ -48,10 +49,10 @@ function getWeather() {
     // Uses a SenkoAPI location string.
     let loc = localStorage.getItem("location");
     if (!loc) {
-        el.innerText = "no location set"
+        el.innerText = "nublar";
         return;
     }
-
+        
     let url = "https://api.awoo.dev/weather/?location=" + loc;
     el.innerText = "loading..."
 
@@ -146,7 +147,7 @@ function search(query) {
 
 function autocomplete(query) {
     const acList = document.querySelectorAll(".ac > div");
-
+    
     fetch(`https://api.awoo.dev/ac/?q=${encodeURI(query)}`).then((resp) => {
         return resp.json();
     }).then((json) => {
@@ -184,12 +185,28 @@ function tooltip(inp) {
         el.innerText = "bookmarks";
 }
 
+// You see, Chromium's NTP doesn't let us read the contents of your recently visited sites.
+// We actually are just given an iframe.
+// So we use this function to suppliment tooltip() for NTP-populated bookmarks.
 function tooltipFrame(rid) {
     const el = document.querySelector("#bookmarks > p");
     el.innerText = "";
     const newEl = document.createElement("iframe");
-    newEl.src = `chrome-search://most-visited/title.html?rid=${rid}&c=7c818c&fs=14&f=arial%2Csans-serif&ta=center`;
+    newEl.src = `chrome-search://most-visited/title.html?rid=${rid}&c=${rgbaToHex(textColor)}&fs=15&f=arial%2Csans-serif&ta=center`;
     el.appendChild(newEl);
+}
+
+function arrayToRgba(arr) {
+    return `rgba(${arr[0]}, ${arr[1]}, ${arr[2]}, ${arr[3]})`;
+}
+
+function rgbaToHex(str) {
+    let arr = str.replace("rgba(","").replace(")","").split(",");
+    let outStr = "";
+    for (let i = 0; i < 3; i++) {
+        outStr += parseInt(arr[i], 10).toString(16).padStart(2, "0");
+    }
+    return outStr;
 }
 
 function addBookmarks() {
@@ -233,15 +250,49 @@ function addBookmarks() {
     }
 
     // Import from Chrome NTP
-    if (typeof chrome !== "undefined") {
+    if (typeof chrome !== "undefined" && typeof chrome.embeddedSearch !== "undefined" && typeof chrome.embeddedSearch.newTabPage !== "undefined") {
+        // Set theme to match Chromium if accessed through NTP
+        // Should work on most Chromium forks, sans Brave.
+        if (chrome.embeddedSearch.newTabPage.themeBackgroundInfo) {
+            const themeObj = chrome.embeddedSearch.newTabPage.themeBackgroundInfo;
+
+            // (first variable is a global)
+            textColor = arrayToRgba(themeObj.textColorLightRgba);
+            let textCardColor = arrayToRgba(themeObj.textColorRgba);
+            let backgroundColor = arrayToRgba(themeObj.backgroundColorRgba);
+
+            // Darken
+            let darkerColor = []
+            for (let i = 0; i < themeObj.backgroundColorRgba.length; i++) {
+                darkerColor[i] = themeObj.backgroundColorRgba[i] - 20;
+                if (darkerColor[i] < 0)
+                    darkerColor[i] = 0;
+            }
+            let cardColor = arrayToRgba(darkerColor);
+
+            if (typeof chrome.embeddedSearch.newTabPage.themeBackgroundInfo.imageUrl !== "undefined")
+                backgroundColor = chrome.embeddedSearch.newTabPage.themeBackgroundInfo.imageUrl;
+
+            document.styleSheets[0].insertRule(`* {
+                --mainBkgd: ${backgroundColor}!important;
+                --cardBkgd: ${cardColor}!important;
+                --mainTxt: ${textColor}!important;
+                --cardTxt: ${textCardColor}!important;
+            }`);
+        }
+
+        // Display recent sites if accessed through Chromium NTP.
+        // This is pretty much done through iframes + chrome-search.
+        // Does NOT work in Brave, Edge; they roll their own NTP logic.
         if (chrome.embeddedSearch.newTabPage.mostVisitedAvailable) {
             const mostVisited = chrome.embeddedSearch.newTabPage.mostVisited;
-            for (link in mostVisited) {
-                let favUrl = chrome.embeddedSearch.newTabPage.mostVisited[link];
+            for (let link = 0; link < mostVisited.length; link++) {
+                let favUrl = chrome.embeddedSearch.newTabPage.mostVisited[link].faviconUrl;
+                let rid = chrome.embeddedSearch.newTabPage.mostVisited[link].rid;
                 newNode = document.createElement("a");
                 newNode.href = "#";
                 newNode.addEventListener("mouseover", (evt) => {
-                    tooltipFrame(link);
+                    tooltipFrame(rid);
                     evt.target.style.opacity = "0.7";
                 });
                 newNode.addEventListener("mouseout", (evt) => {
@@ -258,7 +309,7 @@ function addBookmarks() {
 
                 // create clicky iframe
                 let crLinkHelper = document.createElement("iframe");
-                crLinkHelper.src = `chrome-search://most-visited/title.html?rid=${link}`;
+                crLinkHelper.src = `chrome-search://most-visited/title.html?rid=${rid}`;
                 crLinkHelper.className = "ntpClickyBit";
                 newNode.appendChild(crLinkHelper);
             }
