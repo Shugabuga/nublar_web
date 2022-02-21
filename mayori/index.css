@@ -1,0 +1,130 @@
+/* variables and animations */
+* {
+    --mainBkgd: #303642;
+    --cardBkgd: rgb(64, 69, 82);
+    --mainTxt: rgb(124, 129, 140);
+    --cardTxt: darkgrey;
+    --bookmarkTxt: rgb(82, 148, 226);
+    --protocolTxt: rgb(204, 87, 93);
+    --curvature: 5px;
+    transition: opacity 0.15s ease-in-out;
+}
+
+/* critical styles */
+body {
+    max-width: 800px;
+    font-family: "PT Sans Caption", Roboto, Helvetica, sans-serif;
+    margin: auto;
+    text-align: center;
+    margin-top: 20vh;
+}
+h1 {
+    margin: 5px;
+    font-size: 42px;
+}
+:not(input) {
+    user-select: none;
+}
+
+.header {
+    max-width: 720px;
+    margin: auto;
+    height: 105px;
+}
+#time, #date {
+    font-size: 28px;
+    padding: 10px;
+}
+#time {
+    float: left;
+}
+#date {
+    float: right;
+}
+
+#search {
+    width: calc(100% - 40px);
+    min-height: 32px;
+    font-size: 20px;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    border-radius: var(--curvature);
+    background: var(--cardBkgd);
+    color: var(--cardTxt);
+}
+.ac {
+    display: none;
+    grid-template-columns: 30% auto 30%;
+    grid-column-gap: 10px;
+    padding: 10px;
+    width: auto;
+    opacity: 0;
+}
+.ac > div {
+    padding: 5px;
+    background-color: var(--cardBkgd);
+    color: var(--cardTxt);
+    border-radius: var(--curvature);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.tagline {
+    height: 35px;
+}
+
+#bookmarkList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#bookmarkList > a {
+    background: var(--cardBkgd);
+    color: var(--cardTxt);
+    border-radius: var(--curvature);
+    margin: 5px;
+    padding: 10px;
+    width: 50px;
+    height: 50px;
+    text-decoration: none;
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+/* non-essential stylings */
+html {
+    background: var(--mainBkgd);
+    color: var(--mainTxt);
+}
+
+a:hover, input:focus, .ac > div:hover {
+    opacity: 0.7;
+}
+
+/* chrome ntp */
+iframe {
+    width: auto;
+    border: none;
+}
+.ntpShortcut {
+    width: 50px;
+    height: auto;
+    border-radius: 7px;
+}
+.ntpClickyBit {
+    position: relative;
+    width: 75px;
+    height: 75px;
+    left: -12px;
+    top: -75px;
+    visibility: hidden;
+}
+p > iframe {
+    height: 20px;
+}
